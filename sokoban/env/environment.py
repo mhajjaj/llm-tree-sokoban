@@ -1,5 +1,7 @@
 from typing import List, Set, Tuple
 from sokoban.env.state import SokobanState, Position
+from sokoban.utils.deadlock import has_deadlock
+
 
 class SokobanEnv:
     def __init__(self, raw_lines: List[str]):
@@ -37,7 +39,7 @@ class SokobanEnv:
             raise ValueError("Invalid puzzle: no player found")
 
         return SokobanState(player=player, boxes=frozenset(boxes))
-    
+
     def step(self, state: SokobanState, action: str):
         if action not in ACTIONS:
             return None, False
@@ -65,10 +67,7 @@ class SokobanEnv:
             boxes.add(box_next)
 
         # Move player
-        new_state = SokobanState(
-            player=next_pos,
-            boxes=frozenset(boxes)
-        )
+        new_state = SokobanState(player=next_pos, boxes=frozenset(boxes))
 
         return new_state, True
 
@@ -78,19 +77,23 @@ class SokobanEnv:
     def render(self, state: SokobanState) -> List[str]:
         grid = [[" " for _ in range(self.width)] for _ in range(self.height)]
 
-        for (x, y) in self.walls:
+        for x, y in self.walls:
             grid[y][x] = "#"
 
-        for (x, y) in self.goals:
+        for x, y in self.goals:
             grid[y][x] = "."
 
-        for (x, y) in state.boxes:
+        for x, y in state.boxes:
             grid[y][x] = "*" if (x, y) in self.goals else "$"
 
         px, py = state.player
         grid[py][px] = "+" if (px, py) in self.goals else "@"
 
         return ["".join(row) for row in grid]
+
+    def is_deadlock(self, state: SokobanState) -> bool:
+        return has_deadlock(state, self.walls, self.goals)
+
 
 ACTIONS = {
     "up": (0, -1),
