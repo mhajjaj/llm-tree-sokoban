@@ -26,9 +26,9 @@ def astar_llm(env, predictor, max_nodes=100_000):
 
         # ---- LLM action prediction ----
         state_text = env.to_text(node.state)
-        preferred = predictor.predict(state_text)
+        action = predictor.predict(state_text, node.state)
 
-        ordered_actions = [preferred] + [a for a in ACTIONS if a != preferred]
+        ordered_actions = [action] + [a for a in ACTIONS if a != action]
 
         for action in ordered_actions:
             next_state, ok = env.step(node.state, action)

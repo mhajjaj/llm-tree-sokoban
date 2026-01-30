@@ -1,16 +1,19 @@
+from pathlib import Path
 from sokoban.env.microban_parser import load_microban
 from sokoban.env.environment import SokobanEnv
+from sokoban.llm.heuristic_predictor import HeuristicPredictor
 from sokoban.search.astar import astar, reconstruct_path
 from sokoban.search.astar_llm import astar_llm
-from sokoban.llm.dummy import RandomPredictor
+
+MICROBAN_PATH = Path("data/microban/microban.txt")
 
 
 def main():
-    puzzles = load_microban("data/microban/microban.txt")[:10]
-    predictor = RandomPredictor()
+    puzzles = load_microban(MICROBAN_PATH)[:10]
 
     for i, p in enumerate(puzzles):
         env = SokobanEnv(p.raw_lines)
+        predictor = HeuristicPredictor(env)
 
         res_astar = astar(env)
         print(

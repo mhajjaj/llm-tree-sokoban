@@ -10,3 +10,4 @@ def heuristic(state: SokobanState, goals: Set[Position]) -> int:
     for box in state.boxes:
         cost += min(manhattan(box, g) for g in goals)
     return cost
+
