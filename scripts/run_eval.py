@@ -1,7 +1,7 @@
 from pathlib import Path
 from sokoban.env.microban_parser import load_microban
 from sokoban.env.environment import SokobanEnv
-from sokoban.llm.heuristic_predictor import HeuristicPredictor
+from sokoban.llm.llm_predictor import LLMPredictor
 from sokoban.search.astar import astar, reconstruct_path
 from sokoban.search.astar_llm import astar_llm
 
@@ -11,9 +11,11 @@ MICROBAN_PATH = Path("data/microban/microban.txt")
 def main():
     puzzles = load_microban(MICROBAN_PATH)[:10]
 
+    # Create LLM predictor once
+    predictor = LLMPredictor()
+
     for i, p in enumerate(puzzles):
         env = SokobanEnv(p.raw_lines)
-        predictor = HeuristicPredictor(env)
 
         res_astar = astar(env)
         print(

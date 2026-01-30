@@ -3,3 +3,6 @@ tqdm
 transformers
 torch
 networkx
+openai
+python-dotenv
+requests 
