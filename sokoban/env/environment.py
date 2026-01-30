@@ -1,4 +1,5 @@
 from typing import List, Set, Tuple
+from sokoban.env import state
 from sokoban.env.state import SokobanState, Position
 from sokoban.utils.deadlock import has_deadlock
 
@@ -93,6 +94,9 @@ class SokobanEnv:
 
     def is_deadlock(self, state: SokobanState) -> bool:
         return has_deadlock(state, self.walls, self.goals)
+
+    def to_text(self, state) -> str:
+        return "\n".join("".join(row) for row in state.grid)
 
 
 ACTIONS = {
