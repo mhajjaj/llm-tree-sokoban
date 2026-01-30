@@ -1,4 +1,5 @@
 import heapq
+from logging import root
 from typing import Dict, List, Optional, Tuple
 from sokoban.search.node import SearchNode
 from sokoban.utils.heuristics import heuristic
@@ -24,8 +25,9 @@ def astar(env, max_nodes: int = 100_000) -> Optional[List[str]]:
         h=start_h
     )
 
-    open_heap: List[Tuple[int, int, SearchNode]] = []
-    heapq.heappush(open_heap, (root.g + root.h, 0, root))
+    open_heap = []
+    counter = 0
+    heapq.heappush(open_heap, (root.g + root.h, counter, root))
 
     closed: Dict = {}
     expansions = 0
@@ -61,6 +63,7 @@ def astar(env, max_nodes: int = 100_000) -> Optional[List[str]]:
                 h=h
             )
 
-            heapq.heappush(open_heap, (g + h, expansions, child))
+            counter += 1
+            heapq.heappush(open_heap, (g + h, counter, child))
 
     return None
