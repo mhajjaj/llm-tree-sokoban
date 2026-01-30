@@ -10,6 +10,10 @@ def load_microban(path: str) -> List[SokobanPuzzle]:
         for line in f:
             line = line.rstrip("\n")
 
+            # Skip comments
+            if line.startswith(";"):
+                continue
+
             if line.strip() == "":
                 if current:
                     puzzles.append(
@@ -23,7 +27,6 @@ def load_microban(path: str) -> List[SokobanPuzzle]:
             else:
                 current.append(line)
 
-        # last puzzle
         if current:
             puzzles.append(
                 SokobanPuzzle(
