@@ -13,7 +13,7 @@ def reconstruct_path(node: SearchNode) -> List[str]:
     return list(reversed(actions))
 
 
-def astar(env, max_nodes: int = 100_000) -> Optional[List[str]]:
+def astar(env, max_nodes: int = 100_000) -> Optional[SearchNode]:
     start = env.initial_state
     start_h = heuristic(start, env.goals)
 
@@ -36,7 +36,8 @@ def astar(env, max_nodes: int = 100_000) -> Optional[List[str]]:
         _, _, node = heapq.heappop(open_heap)
 
         if env.is_goal(node.state):
-            return reconstruct_path(node)
+            node.expansions = expansions
+            return node
 
         if node.state in closed and closed[node.state] <= node.g:
             continue

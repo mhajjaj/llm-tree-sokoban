@@ -8,3 +8,4 @@ class SearchNode:
     action: str | None
     g: int  # cost so far
     h: int  # heuristic
+    expansions: int = 0
