@@ -19,7 +19,7 @@ class SokobanEnv:
 
         for y, line in enumerate(lines):
             for x, c in enumerate(line):
-                pos = (x, y)
+                pos = (y, x)
 
                 if c == "#":
                     self.walls.add(pos)
@@ -46,8 +46,9 @@ class SokobanEnv:
             return None, False
 
         dx, dy = ACTIONS[action]
-        px, py = state.player
-        next_pos = (px + dx, py + dy)
+        pr, pc = state.player
+        dr, dc = ACTIONS[action]
+        next_pos = (pr + dr, pc + dc)
 
         # Wall in front
         if next_pos in self.walls:
@@ -57,7 +58,7 @@ class SokobanEnv:
 
         # Moving into box
         if next_pos in boxes:
-            box_next = (next_pos[0] + dx, next_pos[1] + dy)
+            box_next = (next_pos[0] + dr, next_pos[1] + dc)
 
             # Box blocked
             if box_next in self.walls or box_next in boxes:
@@ -78,30 +79,58 @@ class SokobanEnv:
     def render(self, state: SokobanState) -> List[str]:
         grid = [[" " for _ in range(self.width)] for _ in range(self.height)]
 
-        for x, y in self.walls:
-            grid[y][x] = "#"
+        # walls
+        for r, c in self.walls:
+            grid[r][c] = "#"
 
-        for x, y in self.goals:
-            grid[y][x] = "."
+        # goals
+        for r, c in self.goals:
+            grid[r][c] = "."
 
-        for x, y in state.boxes:
-            grid[y][x] = "*" if (x, y) in self.goals else "$"
+        # boxes
+        for r, c in state.boxes:
+            grid[r][c] = "*" if (r, c) in self.goals else "$"
 
-        px, py = state.player
-        grid[py][px] = "+" if (px, py) in self.goals else "@"
+        # player
+        pr, pc = state.player
+        grid[pr][pc] = "+" if (pr, pc) in self.goals else "@"
 
         return ["".join(row) for row in grid]
 
     def is_deadlock(self, state: SokobanState) -> bool:
         return has_deadlock(state, self.walls, self.goals)
 
-    def to_text(self, state) -> str:
-        return "\n".join("".join(row) for row in state.grid)
+    def to_text(self, state):
+        grid = [[" " for _ in range(self.width)] for _ in range(self.height)]
+
+        # walls
+        for r, c in self.walls:
+            grid[r][c] = "#"
+
+        # goals
+        for r, c in self.goals:
+            grid[r][c] = "."
+
+        # boxes
+        for r, c in state.boxes:
+            if (r, c) in self.goals:
+                grid[r][c] = "*"
+            else:
+                grid[r][c] = "$"
+
+        # player
+        pr, pc = state.player
+        if (pr, pc) in self.goals:
+            grid[pr][pc] = "+"
+        else:
+            grid[pr][pc] = "@"
+
+        return "\n".join("".join(row) for row in grid)
 
 
 ACTIONS = {
-    "up": (0, -1),
-    "down": (0, 1),
-    "left": (-1, 0),
-    "right": (1, 0),
+    "up": (-1, 0),
+    "down": (1, 0),
+    "left": (0, -1),
+    "right": (0, 1),
 }
